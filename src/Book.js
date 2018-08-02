@@ -2,14 +2,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const Book = (props) => {
-    // debugger;
     const { book, onCategoryChange } = props;
+    let thumbnail;
+    if(book.hasOwnProperty('imageLinks'))  {
+        thumbnail = book.imageLinks.thumbnail;
+    } else {
+        thumbnail = "http://via.placeholder.com/128x193";
+    }
     return (
     <div className="book">
         <div className="book-top">
             <div className="book-cover" style={{
                 width: 128, height: 193,
-                backgroundImage: `url("${book.imageLinks.thumbnail}")` }}></div>
+                backgroundImage: `url("${thumbnail}")` }}></div>
             <div className="book-shelf-changer">
                 <select onChange={(e) => onCategoryChange(book, e)} value={book.shelf} >
                     <option value="move" disabled>Move to...</option>

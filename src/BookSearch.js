@@ -5,10 +5,7 @@ import * as BooksAPI from './BooksAPI';
 import PropTypes from 'prop-types';
 
 class BookSearch extends Component {
-    /** We use this to ensure we do not query the api at every keystroke */
-    debounce;
-    interval = 600;
-    
+
     /** Keeping search  */
     constructor(props)   {
         super(props);
@@ -18,7 +15,7 @@ class BookSearch extends Component {
             books: props.books
         }
     }
-
+    
     static propTypes = {
         books: PropTypes.array.isRequired,
         onCategoryChange: PropTypes.func.isRequired,
@@ -26,9 +23,10 @@ class BookSearch extends Component {
 
     handleChange=(event) => {
         this.setState({searchTerm: event.target.value});
-        clearTimeout(this.debounce);
         if(event.target.value.length > 0)   {
-            this.debounce = setTimeout(this.searchBooks(event.target.value), this.interval);
+            this.searchBooks(event.target.value);
+        } else {
+            this.setState({searchBooks: []});
         }
     }
 
@@ -36,10 +34,11 @@ class BookSearch extends Component {
         BooksAPI.search(query).then((books) => {
             /** make sure I have an array of books */
             if(books === 'undefined') {
-                return;
+                this.setState(() => ({
+                    searchBooks: []
+                }))
             }
             if(books.constructor === Array) {
-                console.log(JSON.stringify(books));
                 /** 
                  * set all the books to none shelf and update shelf to the current 
                  * values we have in our state 
@@ -83,6 +82,8 @@ class BookSearch extends Component {
                 placeholder="Search by title or author" 
                 value={this.state.searchTerm} 
                 onChange={this.handleChange}
+                minLength={2}
+                debounceTimeout={600}
                 />
 
           </div>
